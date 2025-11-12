@@ -1,0 +1,64 @@
+services:
+  dnd-mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+      args:
+        PYTHON_VERSION: "3.13"
+    
+    image: dnd-mcp-server:${VERSION:-latest}
+    container_name: dnd-mcp-server
+    restart: unless-stopped
+    
+    volumes:
+      - dnd-cache-prod:/app/cache:rw
+      - dnd-logs-prod:/app/logs:rw
+    
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+      - CACHE_DIR=/app/cache
+      - CACHE_TTL_HOURS=24
+    
+    # Read-only root filesystem for security
+    read_only: true
+    tmpfs:
+      - /tmp
+    
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    
+    cap_drop:
+      - ALL
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '1.0'
+          memory: 512M
+    
+    networks:
+      - dnd-mcp-networks
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  dnd-cache-prod:
+    driver: local
+  dnd-logs-prod:
+    driver: local
+
+networks:
+  dnd-mcp-networks:
+    driver: bridge
