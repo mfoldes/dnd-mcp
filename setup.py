@@ -14,8 +14,9 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        "fastmcp",
-        "requests",
+        "fastmcp>=2.13.0",
+        "mcp>=1.17.0",
+        "requests>=2.28.0",
     ],
     python_requires=">=3.10",
     entry_points={

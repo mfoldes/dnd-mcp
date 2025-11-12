@@ -6,11 +6,15 @@ This script starts the FastMCP server that provides D&D 5e information
 through the Model Context Protocol (MCP).
 """
 
+import argparse
 import logging
 import sys
 import traceback
 import os
-from mcp.server.fastmcp import FastMCP
+from typing import Any
+from fastmcp import FastMCP
+from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
 
 # Import from our reorganized structure
 from src.core import api_helpers
@@ -36,15 +40,95 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+HTTP_TRANSPORTS = {"http", "streamable-http", "sse"}
+
+
+def parse_args(argv: list[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Run the D&D Knowledge Navigator FastMCP server."
+    )
+    parser.add_argument(
+        "--transport",
+        choices=["stdio", "http", "streamable-http", "sse"],
+        default="stdio",
+        help="Transport to use when running the server.",
+    )
+    parser.add_argument(
+        "--host",
+        help="Host/interface to bind when using HTTP-based transports.",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        help="Port to bind when using HTTP-based transports.",
+    )
+    parser.add_argument(
+        "--path",
+        help="Endpoint path when using streaming HTTP transports (optional).",
+    )
+    return parser.parse_args(argv)
+
+
+def run_app(app: FastMCP, args: argparse.Namespace) -> None:
+    transport_kwargs: dict[str, Any] = {}
+
+    if args.transport in HTTP_TRANSPORTS:
+        if args.host:
+            transport_kwargs["host"] = args.host
+        if args.port is not None:
+            transport_kwargs["port"] = args.port
+        if args.path:
+            transport_kwargs["path"] = args.path
+        middleware_config: list[Middleware] = []
+        middleware_config.append(
+            Middleware(
+                CORSMiddleware,
+                allow_origins=["*"],
+                allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+                allow_headers=["*"],
+                allow_credentials=True,
+                expose_headers=["*"],
+            )
+        )
+        transport_kwargs["middleware"] = middleware_config
+        uvicorn_config = transport_kwargs.setdefault("uvicorn_config", {})
+        # Uvicorn 0.38 does not yet ship a 'websockets-sansio' backend, so use the
+        # standard websockets implementation to avoid KeyError.
+        if isinstance(uvicorn_config, dict):
+            uvicorn_config.setdefault("ws", "websockets")
+    else:
+        if any(value is not None for value in (args.host, args.port, args.path)):
+            logger.warning(
+                "Ignoring host/port/path arguments; they only apply to HTTP-based transports."
+            )
+
+    logger.info(
+        "Starting FastMCP server with transport=%s host=%s port=%s path=%s",
+        args.transport,
+        transport_kwargs.get("host"),
+        transport_kwargs.get("port"),
+        transport_kwargs.get("path"),
+    )
+
+    app.run(transport=args.transport, **transport_kwargs)
+
 
 def main():
     """Main entry point for the D&D Knowledge Navigator server."""
+    args = parse_args(sys.argv[1:])
+
     # Add debug output
     print("Starting D&D Knowledge Navigator with FastMCP...", file=sys.stderr)
     print(f"Python version: {sys.version}", file=sys.stderr)
     print(f"Current directory: {os.getcwd()}", file=sys.stderr)
     print(
         f"Logs will be saved to: {os.path.abspath(log_file)}", file=sys.stderr)
+    print(f"Selected transport: {args.transport}", file=sys.stderr)
+    if args.transport in HTTP_TRANSPORTS:
+        print(
+            f"HTTP options -> host: {args.host or 'default'}, port: {args.port or 'default'}, path: {args.path or 'default'}",
+            file=sys.stderr,
+        )
 
     try:
         # Create FastMCP server
@@ -65,7 +149,7 @@ def main():
 
         # Run the app
         print("Running FastMCP app...", file=sys.stderr)
-        app.run()
+        run_app(app, args)
         print("App run completed", file=sys.stderr)
         return 0
     except Exception as e:

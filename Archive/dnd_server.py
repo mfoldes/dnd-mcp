@@ -1,6 +1,6 @@
 import requests
 import logging
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 import mcp.types as types
 
 # Configure logging
