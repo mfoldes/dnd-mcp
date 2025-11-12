@@ -52,7 +52,7 @@ def register_resources(app, cache: APICache):
         cache: The shared API cache
     """
     print("Registering D&D API resources...", file=sys.stderr)
-
+    # Disabling prefetching during regitration to avoid long startup times and API limits
     def prefetch_category_items(category: str) -> None:
         """Prefetch and cache all items in a category.
 
@@ -118,10 +118,11 @@ def register_resources(app, cache: APICache):
                         f"Error prefetching item {category}/{item['index']}: {e}")
 
     # Start prefetching common categories in the background
-    import threading
-    for category in ["spells", "equipment", "monsters", "classes", "races"]:
-        threading.Thread(target=prefetch_category_items,
-                         args=(category,), daemon=True).start()
+    # Disabling prefetching during regitration to avoid long startup times and API limits
+    # import threading
+    # for category in ["spells", "equipment", "monsters", "classes", "races"]:
+    #     threading.Thread(target=prefetch_category_items,
+    #                      args=(category,), daemon=True).start()
 
     @app.resource("resource://dnd/categories")
     def get_categories() -> Dict[str, Any]:
