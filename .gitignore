@@ -41,6 +41,7 @@ logs/
 # IDE specific files
 .idea/
 .vscode/
+Archive/
 *.swp
 *.swo
 .DS_Store
@@ -89,4 +90,5 @@ coverage.xml
 *.bak
 *.swp
 *~.nib
-local.properties 
+local.properties
+*.lock
