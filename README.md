@@ -156,7 +156,11 @@ The D&D Knowledge Navigator is organized as a Python package with the following 
 
 ```
 dnd-knowledge-navigator/
+├── .docker.env            # Docker environment variables
+├── .dockerignore          # Docker Ignore File
 ├── dnd_mcp_server.py      # Main server entry point
+├── docker-compose.yaml    # Docker Compose Template
+├── docker-entrypoint.sh   # Docker entrypoint script
 ├── run_tests.py           # Script to run all tests
 ├── setup.py               # Package installation configuration
 ├── src/                   # Source code directory
@@ -204,4 +208,33 @@ To run all tests:
 
 ```bash
 ./run_tests.py
+```
+
+## Docker Usage
+
+### Build and Run with Docker
+
+To build the container image and run the server directly with Docker:
+
+```bash
+docker build -t dnd-mcp-server .
+docker run --rm -p 8000:8000 dnd-mcp-server
+```
+
+The container entrypoint launches the MCP server with the HTTP transport bound to `0.0.0.0:8000`.
+
+### Run with Docker Compose
+
+If you prefer Docker Compose, a service definition is provided:
+
+```bash
+docker compose up -d
+```
+
+This builds the image if needed, mounts persistent cache/log volumes, and exposes the HTTP endpoint on port `8000`.
+
+To stop the service:
+
+```bash
+docker compose down
 ```
