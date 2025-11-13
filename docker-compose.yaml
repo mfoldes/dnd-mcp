@@ -10,6 +10,7 @@ services:
     image: dnd-mcp-server:${VERSION:-latest}
     container_name: dnd-mcp-server
     restart: unless-stopped
+    command: ["--transport", "http", "--host", "0.0.0.0", "--port", "8000"]
     
     volumes:
       - dnd-cache-prod:/app/cache:rw

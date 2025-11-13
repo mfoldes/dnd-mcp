@@ -67,3 +67,4 @@ EXPOSE 8000
 
 # Set entrypoint
 ENTRYPOINT ["python", "dnd_mcp_server.py"]
+CMD ["--transport", "http", "--host", "0.0.0.0", "--port", "8000"]
