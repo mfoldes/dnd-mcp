@@ -9,7 +9,8 @@ with the search_all_categories function.
 import sys
 import json
 import requests
-from cache import APICache
+import unittest
+from src.core.cache import APICache
 from src.query_enhancement import (
     enhance_query,
     expand_query_with_synonyms,
@@ -148,8 +149,25 @@ def test_api_search():
     print("\n✅ API search test completed!")
 
 
+class TestSearchEnhancement(unittest.TestCase):
+    """Basic smoke tests for the query enhancement utilities."""
+
+    def test_query_enhancement_runs(self) -> None:
+        """Ensure the query enhancement pipeline executes without errors."""
+        try:
+            _print_query_enhancement()
+        except Exception as exc:  # pragma: no cover - diagnostic aid
+            self.fail(f"Query enhancement raised an exception: {exc}")
+
+    def test_api_search_runs(self) -> None:
+        """Ensure API search helper executes without raising."""
+        try:
+            _print_api_search()
+        except Exception as exc:  # pragma: no cover - diagnostic aid
+            self.fail(f"API search raised an exception: {exc}")
+
+
 if __name__ == "__main__":
     print("Testing query enhancement integration...")
-
-    test_query_enhancement()
-    test_api_search()
+    _print_query_enhancement()
+    _print_api_search()

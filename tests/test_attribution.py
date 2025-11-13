@@ -8,6 +8,8 @@ a search query and examining the attribution information in the response.
 
 import sys
 import json
+import traceback
+import unittest
 from src.attribution import (
     SourceAttribution,
     ConfidenceLevel,
@@ -20,7 +22,7 @@ from src.attribution import (
 )
 
 
-def test_basic_attribution():
+def _run_basic_attribution() -> None:
     """Test basic attribution functionality."""
     print("Testing basic attribution...")
 
@@ -53,7 +55,7 @@ def test_basic_attribution():
     print("Basic attribution test passed!")
 
 
-def test_confidence_scoring():
+def _run_confidence_scoring() -> None:
     """Test confidence scoring functionality."""
     print("Testing confidence scoring...")
 
@@ -81,7 +83,7 @@ def test_confidence_scoring():
     print(f"Explanation:\n{explanation}")
 
 
-def test_response_formatting():
+def _run_response_formatting() -> None:
     """Test response formatting with attributions."""
     print("Testing response formatting...")
 
@@ -156,13 +158,26 @@ def test_response_formatting():
     print("Response formatting test passed!")
 
 
+class TestAttribution(unittest.TestCase):
+    """Exercise attribution helpers to ensure they run without error."""
+
+    def test_basic_attribution(self) -> None:
+        _run_basic_attribution()
+
+    def test_confidence_scoring(self) -> None:
+        _run_confidence_scoring()
+
+    def test_response_formatting(self) -> None:
+        _run_response_formatting()
+
+
 if __name__ == "__main__":
     try:
-        test_basic_attribution()
+        _run_basic_attribution()
         print()
-        test_confidence_scoring()
+        _run_confidence_scoring()
         print()
-        test_response_formatting()
+        _run_response_formatting()
         print("\nAll tests passed!")
     except AssertionError as e:
         print(f"Test failed: {e}", file=sys.stderr)

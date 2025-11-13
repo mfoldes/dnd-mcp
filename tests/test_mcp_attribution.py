@@ -9,6 +9,7 @@ and examining the formatted attribution in the response.
 import sys
 import json
 import traceback
+import unittest
 from src.attribution import (
     SourceAttribution,
     ConfidenceLevel,
@@ -22,7 +23,7 @@ from src.attribution import (
 from src.attribution.formatters import format_all_attribution_for_display
 
 
-def test_mcp_response_formatting():
+def _run_mcp_response_formatting() -> None:
     """Test MCP response formatting with attributions."""
     print("Testing MCP response formatting...")
 
@@ -103,7 +104,7 @@ def test_mcp_response_formatting():
         print("Continuing with other tests...")
 
 
-def test_direct_formatting():
+def _run_direct_formatting() -> None:
     """Test direct formatting of attribution information."""
     print("Testing direct formatting...")
 
@@ -140,11 +141,21 @@ def test_direct_formatting():
     print("Direct formatting test passed!")
 
 
+class TestMCPAttribution(unittest.TestCase):
+    """Smoke tests for MCP attribution formatting helpers."""
+
+    def test_mcp_response_formatting(self) -> None:
+        _run_mcp_response_formatting()
+
+    def test_direct_formatting(self) -> None:
+        _run_direct_formatting()
+
+
 if __name__ == "__main__":
     try:
-        test_mcp_response_formatting()
+        _run_mcp_response_formatting()
         print()
-        test_direct_formatting()
+        _run_direct_formatting()
         print("\nAll tests passed!")
     except AssertionError as e:
         print(f"Test failed: {e}", file=sys.stderr)

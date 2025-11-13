@@ -8,6 +8,7 @@ and category prioritization.
 """
 
 import sys
+import unittest
 from src.query_enhancement import (
     enhance_query,
     expand_query_with_synonyms,
@@ -18,7 +19,7 @@ from src.query_enhancement import (
 )
 
 
-def test_synonym_expansion():
+def _print_synonym_expansion() -> None:
     """Test the synonym expansion functionality."""
     print("\n=== Testing Synonym Expansion ===")
 
@@ -43,7 +44,7 @@ def test_synonym_expansion():
             print("No synonyms added.")
 
 
-def test_special_term_tokenization():
+def _print_special_term_tokenization() -> None:
     """Test the special term tokenization functionality."""
     print("\n=== Testing Special Term Tokenization ===")
 
@@ -66,7 +67,7 @@ def test_special_term_tokenization():
             print("No special terms found.")
 
 
-def test_fuzzy_matching():
+def _print_fuzzy_matching() -> None:
     """Test the fuzzy matching functionality."""
     print("\n=== Testing Fuzzy Matching ===")
 
@@ -91,7 +92,7 @@ def test_fuzzy_matching():
             print("No corrections suggested.")
 
 
-def test_category_prioritization():
+def _print_category_prioritization() -> None:
     """Test the category prioritization functionality."""
     print("\n=== Testing Category Prioritization ===")
 
@@ -121,7 +122,7 @@ def test_category_prioritization():
         print(f"Top categories: {', '.join(top_categories)}")
 
 
-def test_full_enhancement():
+def _print_full_enhancement() -> None:
     """Test the full query enhancement pipeline."""
     print("\n=== Testing Full Query Enhancement ===")
 
@@ -158,13 +159,32 @@ def test_full_enhancement():
             print(f"Top categories: {', '.join(top_categories)}")
 
 
+class TestQueryEnhancement(unittest.TestCase):
+    """Ensure query enhancement helpers execute without raising."""
+
+    def test_synonym_expansion(self) -> None:
+        _print_synonym_expansion()
+
+    def test_special_term_tokenization(self) -> None:
+        _print_special_term_tokenization()
+
+    def test_fuzzy_matching(self) -> None:
+        _print_fuzzy_matching()
+
+    def test_category_prioritization(self) -> None:
+        _print_category_prioritization()
+
+    def test_full_enhancement(self) -> None:
+        _print_full_enhancement()
+
+
 if __name__ == "__main__":
     print("Testing query enhancement module...")
 
-    test_synonym_expansion()
-    test_special_term_tokenization()
-    test_fuzzy_matching()
-    test_category_prioritization()
-    test_full_enhancement()
+    _print_synonym_expansion()
+    _print_special_term_tokenization()
+    _print_fuzzy_matching()
+    _print_category_prioritization()
+    _print_full_enhancement()
 
     print("\n✅ Query enhancement tests completed!")

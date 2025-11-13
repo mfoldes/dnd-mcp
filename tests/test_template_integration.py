@@ -7,12 +7,13 @@ This script tests the integration of our template system with the tools.
 
 import sys
 import json
+import unittest
 from src.templates import TEMPLATES_ENABLED
 from src.templates.config import FORMATTING_OPTIONS
 from src.attribution import source_tracker, attribution_manager, SourceAttribution, ConfidenceLevel
 
 
-def test_search_formatting():
+def _run_search_formatting() -> None:
     """Test search formatting with templates."""
     print("\n=== Testing Search Formatting ===")
 
@@ -92,7 +93,7 @@ def test_search_formatting():
         print("No content in MCP response")
 
 
-def test_verify_formatting():
+def _run_verify_formatting() -> None:
     """Test verify formatting with templates."""
     print("\n=== Testing Verify Formatting ===")
 
@@ -187,10 +188,20 @@ def test_verify_formatting():
         print("No content in MCP response")
 
 
+class TestTemplateIntegration(unittest.TestCase):
+    """Exercise template integration helpers within unittest."""
+
+    def test_search_formatting(self) -> None:
+        _run_search_formatting()
+
+    def test_verify_formatting(self) -> None:
+        _run_verify_formatting()
+
+
 if __name__ == "__main__":
     print("Testing template integration with tools...")
 
-    test_search_formatting()
-    test_verify_formatting()
+    _run_search_formatting()
+    _run_verify_formatting()
 
     print("\n✅ Template integration tests completed!")
